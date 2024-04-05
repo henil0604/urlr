@@ -1,6 +1,6 @@
 import { CreateForm } from "@/components/CreateForm";
 
-function Header() {
+function Header(): React.ReactNode {
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="text-3xl font-bold">URL Redirector</div>
@@ -11,9 +11,9 @@ function Header() {
   );
 }
 
-export default function Home() {
+export default async function Home() {
   return (
-    <main className="w-screen flex justify-center flex-col items-center p-32">
+    <main className="w-screen flex justify-center flex-col items-center py-24 max-md:py-8 px-4">
       <Header />
       <div className="my-3" />
 
