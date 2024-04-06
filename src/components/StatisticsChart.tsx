@@ -1,8 +1,11 @@
 "use client";
 import { ApexOptions } from "apexcharts";
-import ApexChart from "react-apexcharts";
+import dynamic from "next/dynamic";
+const ApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 import moment from "moment";
 import { useEffect } from "react";
+
+const isSSREnabled = () => typeof window === "undefined";
 
 type Props = {
   data: {
@@ -133,13 +136,15 @@ export function StatisticsChart(
   };
 
   return (
-    <div className="min-w-full">
-      <ApexChart
-        options={options}
-        series={data}
-        width={props.width}
-        height={props.height}
-      />
-    </div>
+    !isSSREnabled() && (
+      <div className="min-w-full">
+        <ApexChart
+          options={options}
+          series={data}
+          width={props.width}
+          height={props.height}
+        />
+      </div>
+    )
   );
 }

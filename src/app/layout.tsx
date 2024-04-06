@@ -3,6 +3,7 @@ import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
+import NoSSRWrapper from "@/components/NoSSRWrapper";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -20,16 +21,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="">
-      <body
-        className={cn(
-          "min-h-screen max-w-screen overflow-x-hidden bg-background font-sans antialiased",
-          fontSans.variable
-        )}
-      >
-        {children}
-        <Toaster position="bottom-left" richColors />
-      </body>
-    </html>
+    <NoSSRWrapper>
+      <html lang="en" className="">
+        <body
+          className={cn(
+            "min-h-screen max-w-screen overflow-x-hidden bg-background font-sans antialiased",
+            fontSans.variable
+          )}
+        >
+          {children}
+          <Toaster position="bottom-left" richColors />
+        </body>
+      </html>
+    </NoSSRWrapper>
   );
 }
