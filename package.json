@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare": "prisma db push"
   },
   "dependencies": {
     "@neoconfetti/react": "^0.1.1",
