@@ -5,8 +5,8 @@ import { LinkItem } from "@/components/LinkItem";
 import { StatisticsChart } from "@/components/StatisticsChart";
 import { LocalStorageKeyName } from "@/const";
 import { overallEngagementGraphDataAtom } from "@/lib/store";
-import useLocalStorage from "@/lib/useLocalStorage";
-import { useMediaQuery } from "@react-hookz/web";
+// import useLocalStorage from "@/lib/useLocalStorage";
+import { useMediaQuery, useLocalStorageValue } from "@react-hookz/web";
 import { useAtom } from "jotai";
 
 function Header(): React.ReactNode {
@@ -35,10 +35,13 @@ function Sidebar(props: {
 
 export default function Home() {
   "use client";
-  const [links, setLinks] = useLocalStorage<{ [key: string]: string }>(
-    LocalStorageKeyName,
-    {}
-  );
+  const {
+    value: links,
+    set: setLinks,
+    fetch: fetchLinks,
+  } = useLocalStorageValue<{ [key: string]: string }>(LocalStorageKeyName, {
+    defaultValue: {},
+  });
 
   const [overallEngagementGraphData, setOverallEngagementGraphData] = useAtom(
     overallEngagementGraphDataAtom
@@ -46,7 +49,7 @@ export default function Home() {
 
   const isMediumDevice = useMediaQuery("only screen and (max-width : 992px)");
   function addLinkToLocalStorage(id: string, identifierHash: string) {
-    const previousItems = links;
+    const previousItems = links || {};
 
     previousItems[id] = identifierHash;
 
@@ -70,9 +73,15 @@ export default function Home() {
           <div className="font-semibold text-md">Your Links</div>
           <div className="my-2"></div>
           <div className="grid grid-cols-2 max-lg:grid-cols-1 gap-4">
-            {Object.keys(links).map((id) => {
-              return <LinkItem key={id} id={id} identifierHash={links[id]} />;
-            })}
+            {links && (
+              <>
+                {Object.keys(links).map((id) => {
+                  return (
+                    <LinkItem key={id} id={id} identifierHash={links[id]} />
+                  );
+                })}
+              </>
+            )}
           </div>
         </div>
       </div>
