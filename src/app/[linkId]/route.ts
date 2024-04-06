@@ -33,7 +33,7 @@ export const GET = async (req: NextRequest, ctx: { params: Params }) => {
   return NextResponse.redirect(link.url, {
     status: 301,
     headers: {
-      "Cache-Control": "no-cache",
+      "Cache-Control": "no-store, max-age=0",
     },
   });
 };

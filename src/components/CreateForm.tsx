@@ -87,7 +87,7 @@ export function CreateForm(props: {
   }
 
   return (
-    <div className="max-w-fit max-md:min-w-full flex justify-center items-center">
+    <div className="max-w-fit max-lg:min-w-full flex justify-center items-center">
       <div className="w-full flex justify-center items-center flex-col gap-6">
         {/* url input */}
         <div className="grid w-full items-center gap-1.5">
@@ -97,7 +97,7 @@ export function CreateForm(props: {
             type="url"
             id="url"
             placeholder="Enter your loooong looooong url"
-            className="w-[400px] max-md:w-full"
+            className="w-[400px] max-lg:w-full"
           />
         </div>
 
@@ -110,7 +110,7 @@ export function CreateForm(props: {
               id="urlId"
               placeholder="Tailor your link ID"
               value={urlId}
-              className="w-[400px] max-md:w-full"
+              className="w-[400px] max-lg:w-full"
               onInput={(event) => {
                 setUrlId((event.target as HTMLInputElement).value);
               }}

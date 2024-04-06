@@ -1,27 +1,7 @@
 import { prisma } from "@/db";
 import { NextRequest, NextResponse } from "next/server";
-
-async function calculateLinkStatistics(id: string) {
-  const totalRedirects = await prisma.linkRedirects.findMany({
-    where: {
-      linkId: id,
-    },
-    select: {
-      ip: true,
-    },
-  });
-
-  const uniqueCounts = Array.from(
-    new Set(
-      totalRedirects.map((redirect) => redirect.ip).filter((ip) => ip !== null)
-    )
-  );
-
-  return {
-    totalCounts: totalRedirects.length,
-    uniqueCounts: uniqueCounts.length,
-  };
-}
+import { calculateLinkStatistics } from "@/lib/server-utils";
+import { GetLinkDataApiResponse } from "@/types";
 
 export const GET = async (req: NextRequest) => {
   const id = req.nextUrl.searchParams.get("id");
@@ -72,13 +52,21 @@ export const GET = async (req: NextRequest) => {
 
   const stats = await calculateLinkStatistics(id);
 
-  return NextResponse.json({
-    error: false,
-    message: "Link found",
-    data: {
-      id: link.id,
-      url: link.url,
-      stats: stats,
-    },
-  });
+  return NextResponse.json(
+    {
+      error: false,
+      message: "Link found",
+      data: {
+        id: link.id,
+        url: link.url,
+        stats: stats,
+        createdAt: link.createdAt.getTime(),
+      },
+    } as GetLinkDataApiResponse,
+    {
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+      },
+    }
+  );
 };
