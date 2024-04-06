@@ -16,5 +16,17 @@ model Link {
 
     identifierHash String
 
+    redirects LinkRedirects[]
+    createdAt DateTime        @default(now())
+}
+
+model LinkRedirects {
+    id String @id @default(cuid())
+
+    link   Link   @relation(fields: [linkId], references: [id])
+    linkId String
+
+    ip String?
+
     createdAt DateTime @default(now())
 }

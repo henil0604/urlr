@@ -1,11 +1,11 @@
 import { prisma } from "@/db";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 type Params = {
   linkId: string;
 };
 
-export const GET = async (req: Request, ctx: { params: Params }) => {
+export const GET = async (req: NextRequest, ctx: { params: Params }) => {
   const { linkId } = ctx.params;
 
   const link = await prisma.link.findFirst({
@@ -19,5 +19,21 @@ export const GET = async (req: Request, ctx: { params: Params }) => {
     return new NextResponse("Link not found", { status: 404 });
   }
 
-  return NextResponse.redirect(link.url, { status: 301 });
+  await prisma.linkRedirects.create({
+    data: {
+      ip: req.ip,
+      link: {
+        connect: {
+          id: linkId,
+        },
+      },
+    },
+  });
+
+  return NextResponse.redirect(link.url, {
+    status: 301,
+    headers: {
+      "Cache-Control": "no-cache",
+    },
+  });
 };
