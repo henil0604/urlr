@@ -19,9 +19,12 @@ export const GET = async (req: NextRequest, ctx: { params: Params }) => {
     return new NextResponse("Link not found", { status: 404 });
   }
 
+  const ip = (req.headers.get("x-forwarded-for") ?? "127.0.0.1").split(",")[0];
+
+  console.log("ip?", ip);
   await prisma.linkRedirects.create({
     data: {
-      ip: req.ip,
+      ip: ip,
       link: {
         connect: {
           id: linkId,
