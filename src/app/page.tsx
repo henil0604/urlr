@@ -5,7 +5,7 @@ import { LinkItem } from "@/components/LinkItem";
 import { StatisticsChart } from "@/components/StatisticsChart";
 import { useLinksStore, useOverallEngagementGraphDataStore } from "@/lib/store";
 import { useMediaQuery } from "@react-hookz/web";
-import { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 
 function Header(): React.ReactNode {
   return (

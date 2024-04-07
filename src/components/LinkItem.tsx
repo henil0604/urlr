@@ -7,7 +7,6 @@ import moment from "moment";
 import { Button } from "@/components/ui/button";
 import { ChartLineUp } from "@phosphor-icons/react";
 import QRCode from "react-qr-code";
-// import { overallEngagementGraphDataAtom } from "@/lib/store";
 import { toast } from "sonner";
 import { useLinksStore, useOverallEngagementGraphDataStore } from "@/lib/store";
 
@@ -47,17 +46,6 @@ function SkeletonItem() {
             <Skeleton className="w-[20%] h-5 bg-gray-200" />
           </div>
         </div>
-        {/* <div className="flex flex-col w-full">
-		<div className="font-semibold text-sm">Original URL</div>
-
-		<a
-		  href="https://drive.google.com/drive/folders/1awtqAclDKijQE0V0Zek0-B78a8F9uNX0"
-		  target="_blank"
-		  className="w-[70%] h-fit text-sm underline underline-offset-4 text-ellipsis overflow-hidden whitespace-nowrap"
-		>
-		  https://drive.google.com/drive/folders/1awtqAclDKijQE0V0Zek0-B78a8F9uNX0
-		</a>
-	  </div> */}
       </div>
       <div className="flex flex-col">
         <Skeleton className="w-10 h-10 bg-gray-200 rounded-full" />
