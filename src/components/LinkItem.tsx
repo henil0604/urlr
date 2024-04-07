@@ -7,7 +7,6 @@ import moment from "moment";
 import { Button } from "@/components/ui/button";
 import { ChartLineUp } from "@phosphor-icons/react";
 import QRCode from "react-qr-code";
-import { useAtom } from "jotai";
 // import { overallEngagementGraphDataAtom } from "@/lib/store";
 import { toast } from "sonner";
 import { useLinksStore, useOverallEngagementGraphDataStore } from "@/lib/store";

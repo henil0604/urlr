@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 const ApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 import { type ApexOptions } from "apexcharts";
 import moment from "moment";
-import { useEffect } from "react";
 
 type Props = {
   data: {
