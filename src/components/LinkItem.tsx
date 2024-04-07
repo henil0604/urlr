@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import moment from "moment";
 import { Button } from "@/components/ui/button";
 import { ChartLineUp } from "@phosphor-icons/react";
-import QRCode from "react-qr-code";
+import QRCode from "qrcode.react";
 import { toast } from "sonner";
 import { useLinksStore, useOverallEngagementGraphDataStore } from "@/lib/store";
 import { StatisticsDrawerForLinkItem } from "./StatisticsDrawerForLinkItem";
@@ -187,9 +187,10 @@ export function LinkItem(props: Props): React.ReactNode {
     <div className="p-4 min-w-[600px] overflow-x-clip max-md:min-w-full w-full flex max-md:flex-col gap-4 rounded-lg border border-gray-400 text-black">
       {/* QR */}
       <div className="flex-grow-0 min-w-fit flex flex-col gap-2">
-        <div className="aspect-square max-w-40">
+        <div className="aspect-square !max-w-40">
           <QRCode
             value={`${location.origin}/${data.id}`}
+            size={512}
             style={{ height: "auto", maxWidth: "100%", width: "100%" }}
           />
         </div>
