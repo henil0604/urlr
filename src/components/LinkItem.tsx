@@ -9,6 +9,7 @@ import { ChartLineUp } from "@phosphor-icons/react";
 import QRCode from "react-qr-code";
 import { toast } from "sonner";
 import { useLinksStore, useOverallEngagementGraphDataStore } from "@/lib/store";
+import { StatisticsDrawerForLinkItem } from "./StatisticsDrawerForLinkItem";
 
 type Props = {
   id: string;
@@ -74,6 +75,7 @@ export function LinkItem(props: Props): React.ReactNode {
   const { add: addToOverallEngagementGraphData } =
     useOverallEngagementGraphDataStore();
 
+  // fetching data on mount
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
@@ -123,6 +125,7 @@ export function LinkItem(props: Props): React.ReactNode {
     })(); // end of immediate function
   }, []); // end of useEffect
 
+  // this effect hook will refetch link data every few seconds
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
@@ -181,7 +184,7 @@ export function LinkItem(props: Props): React.ReactNode {
   return loading || !data ? (
     <SkeletonItem />
   ) : (
-    <div className="p-3 min-w-[600px] w-full flex gap-4 rounded-lg border border-gray-400 text-black">
+    <div className="p-4 min-w-[600px] overflow-x-clip max-md:min-w-full w-full flex max-md:flex-col gap-4 rounded-lg border border-gray-400 text-black">
       {/* QR */}
       <div className="flex-grow-0 min-w-fit flex flex-col gap-2">
         <div className="aspect-square max-w-40">
@@ -196,24 +199,24 @@ export function LinkItem(props: Props): React.ReactNode {
           </span>
         </div>
       </div>
-      <div className="flex-grow flex flex-col py-0 w-fit gap-4 [&>div]:min-w-fit">
+      <div className="flex-grow flex flex-col py-0 w-full gap-4 [&>div]:min-w-full">
         <div className="flex flex-col gap-1">
           <p className="text-xs font-semibold">Shorten Link</p>
           <a
             href={`${location.origin}/${data.id}`}
             target="_blank"
-            className="max-w-[80%] h-fit text-sm underline underline-offset-4 text-ellipsis overflow-hidden whitespace-nowrap"
+            className="max-w-[70%] h-fit text-sm underline underline-offset-4 text-ellipsis overflow-clip whitespace-nowrap"
           >
             {`${location.origin}/${data.id}`}
           </a>
         </div>
 
-        <div className="w-[250px] flex flex-col gap-1">
+        <div className="w-full flex flex-col gap-1">
           <p className="text-xs font-semibold w-fit">Original URL</p>
           <a
             href={data.url}
             target="_blank"
-            className="max-w-[80%] h-fit text-sm underline underline-offset-4 overflow-hidden text-nowrap text-ellipsis"
+            className="max-w-[70%] h-fit text-sm underline underline-offset-4 overflow-clip text-nowrap text-ellipsis"
           >
             {data.url}
           </a>
@@ -231,9 +234,7 @@ export function LinkItem(props: Props): React.ReactNode {
         </div>
       </div>
       <div className="flex-grow-0 flex flex-col">
-        <Button variant="outline" className="w-fit h-fit rounded-full p-2">
-          <ChartLineUp size={20} />
-        </Button>
+        <StatisticsDrawerForLinkItem />
       </div>
     </div>
   );
