@@ -6,7 +6,9 @@ type Params = {
 };
 
 export const GET = async (req: NextRequest, ctx: { params: Params }) => {
-  const { linkId } = ctx.params;
+  let { linkId } = ctx.params;
+
+  linkId = Array.isArray(linkId) ? linkId.join("/") : linkId;
 
   const link = await prisma.link.findFirst({
     where: {
