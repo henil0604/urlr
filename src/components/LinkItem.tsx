@@ -181,7 +181,7 @@ export function LinkItem(props: Props): React.ReactNode {
   return loading || !data ? (
     <SkeletonItem />
   ) : (
-    <div className="p-3 w-full flex gap-4 rounded-lg border border-gray-400 text-black">
+    <div className="p-3 min-w-[600px] w-full flex gap-4 rounded-lg border border-gray-400 text-black">
       {/* QR */}
       <div className="flex-grow-0 min-w-fit flex flex-col gap-2">
         <div className="aspect-square max-w-40">
@@ -196,13 +196,13 @@ export function LinkItem(props: Props): React.ReactNode {
           </span>
         </div>
       </div>
-      <div className="flex-grow flex flex-col py-0 w-fit gap-4">
+      <div className="flex-grow flex flex-col py-0 w-fit gap-4 [&>div]:min-w-fit">
         <div className="flex flex-col gap-1">
           <p className="text-xs font-semibold">Shorten Link</p>
           <a
             href={`${location.origin}/${data.id}`}
             target="_blank"
-            className="w-[70%] h-fit text-sm underline underline-offset-4 text-ellipsis overflow-hidden whitespace-nowrap"
+            className="max-w-[80%] h-fit text-sm underline underline-offset-4 text-ellipsis overflow-hidden whitespace-nowrap"
           >
             {`${location.origin}/${data.id}`}
           </a>
@@ -213,7 +213,7 @@ export function LinkItem(props: Props): React.ReactNode {
           <a
             href={data.url}
             target="_blank"
-            className="w-full h-fit text-sm underline underline-offset-4 overflow-hidden text-nowrap text-ellipsis"
+            className="max-w-[80%] h-fit text-sm underline underline-offset-4 overflow-hidden text-nowrap text-ellipsis"
           >
             {data.url}
           </a>

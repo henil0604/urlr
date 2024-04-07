@@ -135,14 +135,34 @@ export function StatisticsChart(
   };
 
   return (
-    <div className="min-w-full">
-      <ApexChart
-        options={options}
-        series={data}
-        width={props.width || "100%"}
-        height={props.height || "100%"}
-        type={options.chart?.type}
-      />
-    </div>
+    <>
+      <div className="min-w-full rounded-md">
+        {props.data.length === 0 ? (
+          <div
+            className="border px-2 rounded py-2 flex flex-col gap-4"
+            style={{
+              width: props.width || "100%",
+              height: props.height || "100%",
+            }}
+          >
+            <div className="font-semibold">{props.title}</div>
+            <div className="flex justify-center flex-col items-center w-full h-full">
+              <div className="text-muted-foreground">Not Enough Data</div>
+              <div className="text-xs text-muted-foreground tracking-tight">
+                Start sharing your links
+              </div>
+            </div>
+          </div>
+        ) : (
+          <ApexChart
+            options={options}
+            series={data}
+            width={props.width || "100%"}
+            height={props.height || "100%"}
+            type={options.chart?.type}
+          />
+        )}
+      </div>
+    </>
   );
 }

@@ -10,11 +10,13 @@ import { Shuffle } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { useLinksStore } from "@/lib/store";
 import { CreateLinkApiResponse } from "@/types";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 export function CreateForm(): React.ReactNode {
   const inputRef = useRef<HTMLInputElement>(null);
   const { add: addLinkToLocalStorage } = useLinksStore();
   const [urlId, setUrlId] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function handleOnCreate() {
     const value = inputRef.current!.value.trim();
@@ -37,6 +39,8 @@ export function CreateForm(): React.ReactNode {
       return;
     }
 
+    setLoading(true);
+
     const response = await fetch("/api/create", {
       method: "POST",
       body: JSON.stringify({
@@ -49,6 +53,7 @@ export function CreateForm(): React.ReactNode {
 
     if (responseData.error === true) {
       toast.error(responseData.message, {});
+      setLoading(false);
       return;
     }
 
@@ -60,6 +65,7 @@ export function CreateForm(): React.ReactNode {
     toast.success("Link created successfully", {
       dismissible: true,
     });
+    setLoading(false);
   }
 
   function setRandomURLId() {
@@ -67,57 +73,65 @@ export function CreateForm(): React.ReactNode {
   }
 
   return (
-    <div className="max-w-fit max-lg:min-w-full flex justify-center items-center">
-      <div className="w-full flex justify-center items-center flex-col gap-6">
-        {/* url input */}
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="url">URL</Label>
-          <Input
-            ref={inputRef}
-            type="url"
-            id="url"
-            placeholder="Enter your loooong looooong url"
-            className="w-[400px] max-lg:w-full"
-          />
+    <>
+      {loading && (
+        <div className="absolute bg-white z-[100] flex flex-col gap-2 justify-center items-center top-0 left-0 w-full h-full">
+          <LoadingSpinner />
+          <div>Working on it...</div>
         </div>
-
-        {/* id */}
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="urlId">id</Label>
-          <div className="relative">
+      )}
+      <div className="max-w-fit max-lg:min-w-full flex justify-center items-center">
+        <div className="w-full flex justify-center items-center flex-col gap-6">
+          {/* url input */}
+          <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="url">URL</Label>
             <Input
-              type="text"
-              id="urlId"
-              placeholder="Tailor your link ID"
-              value={urlId}
+              ref={inputRef}
+              type="url"
+              id="url"
+              placeholder="Enter your loooong looooong url"
               className="w-[400px] max-lg:w-full"
-              onInput={(event) => {
-                setUrlId((event.target as HTMLInputElement).value);
-              }}
             />
-
-            <div className="absolute top-0 right-0 h-full p-1">
-              <Button
-                onClick={setRandomURLId}
-                variant="default"
-                className="w-fit h-full p-2"
-              >
-                <Shuffle />
-              </Button>
-            </div>
           </div>
-          {urlId.trim() !== "" && (
-            <Label className="text-muted-foreground text-sm">
-              {location.origin}/{urlId}
-            </Label>
-          )}
-        </div>
 
-        {/* submit button */}
-        <Button className="w-full" onClick={handleOnCreate}>
-          Create
-        </Button>
+          {/* id */}
+          <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="urlId">id</Label>
+            <div className="relative">
+              <Input
+                type="text"
+                id="urlId"
+                placeholder="Tailor your link ID"
+                value={urlId}
+                className="w-[400px] max-lg:w-full"
+                onInput={(event) => {
+                  setUrlId((event.target as HTMLInputElement).value);
+                }}
+              />
+
+              <div className="absolute top-0 right-0 h-full p-1">
+                <Button
+                  onClick={setRandomURLId}
+                  variant="default"
+                  className="w-fit h-full p-2"
+                >
+                  <Shuffle />
+                </Button>
+              </div>
+            </div>
+            {urlId.trim() !== "" && (
+              <Label className="text-muted-foreground text-sm">
+                {location.origin}/{urlId}
+              </Label>
+            )}
+          </div>
+
+          {/* submit button */}
+          <Button className="w-full" onClick={handleOnCreate}>
+            Create
+          </Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

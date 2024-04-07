@@ -20,7 +20,7 @@ function Header(): React.ReactNode {
 
 function Sidebar(): React.ReactNode {
   return (
-    <div className="border border-gray-300 rounded-lg shadow px-4 pt-14 pb-8 max-lg:py-8 max-w-fit max-lg:min-w-full">
+    <div className="border border-gray-300 relative rounded-lg shadow px-4 pt-14 pb-8 max-lg:py-8 max-w-fit max-lg:min-w-full">
       <Header />
       <div className="my-8" />
 
@@ -42,7 +42,7 @@ export default function Home() {
   return (
     <main className="w-screen flex gap-10 max-lg:flex-col py-20 px-32 max-lg:py-10 max-lg:px-6">
       {/* Sidebar */}
-      <div className="w-fit pt-11 max-lg:w-full h-fit">
+      <div className="w-fit max-lg:w-full h-fit">
         <Sidebar />
       </div>
 
@@ -51,13 +51,14 @@ export default function Home() {
           <Suspense fallback={<div>Loading...</div>}>
             <StatisticsChart
               title="Overall Engagement"
-              height={isMediumDevice ? 250 : 500}
+              height={isMediumDevice ? 250 : 400}
               data={overallEngagementGraphData}
             />
           </Suspense>
+          <div className="my-6"></div>
           <div className="font-semibold text-md">Your Links</div>
           <div className="my-2"></div>
-          <div className="grid grid-cols-2 max-lg:grid-cols-1 gap-4">
+          <div className="grid auto-cols-1 gap-4">
             <>
               {Object.keys(links).map((id) => {
                 return (
