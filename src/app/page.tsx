@@ -8,6 +8,7 @@ import { overallEngagementGraphDataAtom } from "@/lib/store";
 // import useLocalStorage from "@/lib/useLocalStorage";
 import { useMediaQuery, useLocalStorageValue } from "@react-hookz/web";
 import { useAtom } from "jotai";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 function Header(): React.ReactNode {
   return (
@@ -35,13 +36,40 @@ function Sidebar(props: {
 
 export default function Home() {
   "use client";
-  const {
-    value: links,
-    set: setLinks,
-    fetch: fetchLinks,
-  } = useLocalStorageValue<{ [key: string]: string }>(LocalStorageKeyName, {
-    defaultValue: {},
-  });
+
+  const [links, setLinks] = useState<Record<string, string>>({});
+
+  //   const {
+  //     value: linksFromLocalStorage,
+  //     set: setLinksToLocalStorage,
+  //     fetch: fetchLinks,
+  //   } = useLocalStorageValue<{ [key: string]: string }>(LocalStorageKeyName, {
+  //     defaultValue: {},
+  //     initializeWithValue: true,
+  //   });
+
+  //   const links: { [key: string]: string } = {
+  //     drive: "sgQ0rfPMcpRLvo4SHenFoOa15AovAYf5i8LesaABZvSGtQ0wkcmDVLdTobPXh1jy",
+  //   };
+
+  const fetchLinksFromLocalStorage = () => {
+    initLocalStorage();
+
+    const localLinks = localStorage.getItem(LocalStorageKeyName) || "{}";
+
+    return JSON.parse(localLinks) as Record<string, string>;
+  };
+
+  const initLocalStorage = () => {
+    if (!localStorage.getItem(LocalStorageKeyName)) {
+      localStorage.setItem(LocalStorageKeyName, "{}");
+    }
+  };
+
+  useEffect(() => {
+    initLocalStorage();
+    setLinks(fetchLinksFromLocalStorage());
+  }, []);
 
   const [overallEngagementGraphData, setOverallEngagementGraphData] = useAtom(
     overallEngagementGraphDataAtom
@@ -49,11 +77,11 @@ export default function Home() {
 
   const isMediumDevice = useMediaQuery("only screen and (max-width : 992px)");
   function addLinkToLocalStorage(id: string, identifierHash: string) {
-    const previousItems = links || {};
-
-    previousItems[id] = identifierHash;
-
-    setLinks(previousItems);
+    initLocalStorage();
+    const newLinks = structuredClone(links) || {};
+    newLinks[id] = identifierHash;
+    localStorage.setItem(LocalStorageKeyName, JSON.stringify(newLinks));
+    setLinks(fetchLinksFromLocalStorage());
   }
 
   return (
@@ -65,23 +93,25 @@ export default function Home() {
 
       <div className="flex-grow">
         <div className="w-full h-fit">
-          <StatisticsChart
-            title="Overall Engagement"
-            height={isMediumDevice ? 250 : 500}
-            data={overallEngagementGraphData}
-          />
+          <Suspense fallback={<div>Loading...</div>}>
+            <StatisticsChart
+              title="Overall Engagement"
+              height={isMediumDevice ? 250 : 500}
+              data={overallEngagementGraphData}
+            />
+          </Suspense>
           <div className="font-semibold text-md">Your Links</div>
           <div className="my-2"></div>
           <div className="grid grid-cols-2 max-lg:grid-cols-1 gap-4">
-            {links && (
-              <>
-                {Object.keys(links).map((id) => {
-                  return (
-                    <LinkItem key={id} id={id} identifierHash={links[id]} />
-                  );
-                })}
-              </>
-            )}
+            <>
+              {Object.keys(links).map((id) => {
+                return (
+                  <Suspense key={links[id]} fallback={<div>Loading...</div>}>
+                    <LinkItem id={id} identifierHash={links[id]} />
+                  </Suspense>
+                );
+              })}
+            </>
           </div>
         </div>
       </div>

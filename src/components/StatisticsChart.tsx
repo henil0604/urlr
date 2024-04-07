@@ -1,11 +1,10 @@
 "use client";
-import { ApexOptions } from "apexcharts";
+
 import dynamic from "next/dynamic";
 const ApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
+import { type ApexOptions } from "apexcharts";
 import moment from "moment";
 import { useEffect } from "react";
-
-const isSSREnabled = () => typeof window === "undefined";
 
 type Props = {
   data: {
@@ -41,6 +40,8 @@ function transformDataByDayWise(
   data: Props["data"],
   minimumDataArrayLength: number
 ): TransformedData {
+  "use client";
+
   data = data.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 
   const transformedData: {
@@ -92,19 +93,18 @@ export function StatisticsChart(
   props: Props = {
     data: [],
     height: "100%",
-    width: "100%",
   }
 ) {
   const DAYS = 7;
 
   const xAxis = generateXAxis(DAYS);
 
-  const data = transformDataByDayWise(props.data, DAYS);
+  const data = transformDataByDayWise(props.data, DAYS) || [];
 
   const options: ApexOptions = {
     chart: {
       height: props.height,
-      type: "bar",
+      type: "line",
       zoom: {
         type: "x",
         enabled: true,
@@ -136,15 +136,14 @@ export function StatisticsChart(
   };
 
   return (
-    !isSSREnabled() && (
-      <div className="min-w-full">
-        <ApexChart
-          options={options}
-          series={data}
-          width={props.width}
-          height={props.height}
-        />
-      </div>
-    )
+    <div className="min-w-full">
+      <ApexChart
+        options={options}
+        series={data}
+        width={props.width || "100%"}
+        height={props.height || "100%"}
+        type={options.chart?.type}
+      />
+    </div>
   );
 }

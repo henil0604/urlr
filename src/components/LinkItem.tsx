@@ -1,7 +1,7 @@
 "use client";
 
 import { GetLinkDataApiResponse, GetLinkDataApiResponseData } from "@/types";
-import { Suspense, useEffect, useRef, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import moment from "moment";
 import { Button } from "@/components/ui/button";
@@ -74,6 +74,10 @@ export function LinkItem(props: Props): React.ReactNode {
   );
 
   useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
     if (hasFetched.current) {
       return;
     }
@@ -94,9 +98,6 @@ export function LinkItem(props: Props): React.ReactNode {
           ...response.data,
         });
 
-        setLoading(false);
-
-        console.log(response.data);
         setOverallEngagementGraphData((data) => {
           return [
             ...data,
@@ -116,6 +117,7 @@ export function LinkItem(props: Props): React.ReactNode {
         });
 
         hasFetched.current = true;
+        setLoading(false);
       });
   }, []);
 
