@@ -3,12 +3,9 @@
 import { CreateForm } from "@/components/CreateForm";
 import { LinkItem } from "@/components/LinkItem";
 import { StatisticsChart } from "@/components/StatisticsChart";
-import { LocalStorageKeyName } from "@/const";
-import { overallEngagementGraphDataAtom } from "@/lib/store";
-// import useLocalStorage from "@/lib/useLocalStorage";
-import { useMediaQuery, useLocalStorageValue } from "@react-hookz/web";
-import { useAtom } from "jotai";
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { useLinksStore, useOverallEngagementGraphDataStore } from "@/lib/store";
+import { useMediaQuery } from "@react-hookz/web";
+import { Suspense, useEffect } from "react";
 
 function Header(): React.ReactNode {
   return (
@@ -21,15 +18,13 @@ function Header(): React.ReactNode {
   );
 }
 
-function Sidebar(props: {
-  addLinkToLocalStorage: (id: string, identifierHash: string) => any;
-}): React.ReactNode {
+function Sidebar(): React.ReactNode {
   return (
     <div className="border border-gray-300 rounded-lg shadow px-4 pt-14 pb-8 max-lg:py-8 max-w-fit max-lg:min-w-full">
       <Header />
       <div className="my-8" />
 
-      <CreateForm addLinkToLocalStorage={props.addLinkToLocalStorage} />
+      <CreateForm />
     </div>
   );
 }
@@ -37,58 +32,18 @@ function Sidebar(props: {
 export default function Home() {
   "use client";
 
-  const [links, setLinks] = useState<Record<string, string>>({});
+  const { links } = useLinksStore();
 
-  //   const {
-  //     value: linksFromLocalStorage,
-  //     set: setLinksToLocalStorage,
-  //     fetch: fetchLinks,
-  //   } = useLocalStorageValue<{ [key: string]: string }>(LocalStorageKeyName, {
-  //     defaultValue: {},
-  //     initializeWithValue: true,
-  //   });
-
-  //   const links: { [key: string]: string } = {
-  //     drive: "sgQ0rfPMcpRLvo4SHenFoOa15AovAYf5i8LesaABZvSGtQ0wkcmDVLdTobPXh1jy",
-  //   };
-
-  const fetchLinksFromLocalStorage = () => {
-    initLocalStorage();
-
-    const localLinks = localStorage.getItem(LocalStorageKeyName) || "{}";
-
-    return JSON.parse(localLinks) as Record<string, string>;
-  };
-
-  const initLocalStorage = () => {
-    if (!localStorage.getItem(LocalStorageKeyName)) {
-      localStorage.setItem(LocalStorageKeyName, "{}");
-    }
-  };
-
-  useEffect(() => {
-    initLocalStorage();
-    setLinks(fetchLinksFromLocalStorage());
-  }, []);
-
-  const [overallEngagementGraphData, setOverallEngagementGraphData] = useAtom(
-    overallEngagementGraphDataAtom
-  );
+  const { data: overallEngagementGraphData } =
+    useOverallEngagementGraphDataStore();
 
   const isMediumDevice = useMediaQuery("only screen and (max-width : 992px)");
-  function addLinkToLocalStorage(id: string, identifierHash: string) {
-    initLocalStorage();
-    const newLinks = structuredClone(links) || {};
-    newLinks[id] = identifierHash;
-    localStorage.setItem(LocalStorageKeyName, JSON.stringify(newLinks));
-    setLinks(fetchLinksFromLocalStorage());
-  }
 
   return (
     <main className="w-screen flex gap-10 max-lg:flex-col py-20 px-32 max-lg:py-10 max-lg:px-6">
       {/* Sidebar */}
       <div className="w-fit pt-11 max-lg:w-full h-fit">
-        <Sidebar addLinkToLocalStorage={addLinkToLocalStorage} />
+        <Sidebar />
       </div>
 
       <div className="flex-grow">

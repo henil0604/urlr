@@ -17,3 +17,20 @@ export type GetLinkDataApiResponse =
       message: string;
       data: GetLinkDataApiResponseData;
     };
+
+export type CreateLinkApiResponseData = {
+  id: string;
+  url: string;
+  identifierHash: string;
+};
+
+export type CreateLinkApiResponse =
+  | {
+      error: true;
+      message: string;
+    }
+  | {
+      error: false;
+      message: string;
+      data: CreateLinkApiResponseData;
+    };

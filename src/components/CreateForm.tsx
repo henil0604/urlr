@@ -4,21 +4,16 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import {
-  FormEvent,
-  FormEventHandler,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useRef, useState } from "react";
 import { randomString, validateURL } from "@/lib/utils";
 import { Shuffle } from "@phosphor-icons/react";
 import { toast } from "sonner";
+import { useLinksStore } from "@/lib/store";
+import { CreateLinkApiResponse } from "@/types";
 
-export function CreateForm(props: {
-  addLinkToLocalStorage: (id: string, identifierHash: string) => any;
-}): React.ReactNode {
+export function CreateForm(): React.ReactNode {
   const inputRef = useRef<HTMLInputElement>(null);
+  const { add: addLinkToLocalStorage } = useLinksStore();
   const [urlId, setUrlId] = useState("");
 
   async function handleOnCreate() {
@@ -50,29 +45,14 @@ export function CreateForm(props: {
       }),
     });
 
-    type APIResponseData =
-      | {
-          error: true;
-          message: string;
-        }
-      | {
-          error: false;
-          message: string;
-          data: {
-            id: string;
-            url: string;
-            identifierHash: string;
-          };
-        };
-
-    const responseData: APIResponseData = await response.json();
+    const responseData: CreateLinkApiResponse = await response.json();
 
     if (responseData.error === true) {
       toast.error(responseData.message, {});
       return;
     }
 
-    props.addLinkToLocalStorage(
+    addLinkToLocalStorage(
       responseData.data.id,
       responseData.data.identifierHash
     );

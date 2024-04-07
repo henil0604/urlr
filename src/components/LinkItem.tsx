@@ -8,7 +8,9 @@ import { Button } from "@/components/ui/button";
 import { ChartLineUp } from "@phosphor-icons/react";
 import QRCode from "react-qr-code";
 import { useAtom } from "jotai";
-import { overallEngagementGraphDataAtom } from "@/lib/store";
+// import { overallEngagementGraphDataAtom } from "@/lib/store";
+import { toast } from "sonner";
+import { useLinksStore, useOverallEngagementGraphDataStore } from "@/lib/store";
 
 type Props = {
   id: string;
@@ -65,13 +67,25 @@ function SkeletonItem() {
   );
 }
 
+async function fetchLinkData(id: string, hash: string) {
+  const response = await fetch(`/api/get?id=${id}&hash=${hash}`, {
+    method: "GET",
+  });
+
+  const responseData: GetLinkDataApiResponse = await response.json();
+
+  return responseData;
+}
+
 export function LinkItem(props: Props): React.ReactNode {
   const [loading, setLoading] = useState(true);
+  const { remove: removeLinkFromLocalStorage } = useLinksStore();
   const [data, setData] = useState<GetLinkDataApiResponseData | null>(null);
   const hasFetched = useRef(false);
-  const [overallEngagementGraphData, setOverallEngagementGraphData] = useAtom(
-    overallEngagementGraphDataAtom
-  );
+  const [lastFetchTime, setLastFetchTime] = useState(0);
+
+  const { add: addToOverallEngagementGraphData } =
+    useOverallEngagementGraphDataStore();
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -82,44 +96,100 @@ export function LinkItem(props: Props): React.ReactNode {
       return;
     }
 
-    setLoading(true);
+    (async () => {
+      setLoading(true);
 
-    fetch(`/api/get?id=${props.id}&hash=${props.identifierHash}`, {
-      method: "GET",
-    })
-      .then((res) => res.json())
-      .then(async (response: GetLinkDataApiResponse) => {
-        if (response.error === true) {
-          // TODO: handle error
-          return;
-        }
+      const responseData = await fetchLinkData(props.id, props.identifierHash);
+
+      if (responseData.error) {
+        removeLinkFromLocalStorage(props.id);
+        toast.warning(`Removed dummy link (ID: ${props.id})`, {
+          duration: 3000,
+        });
+        setLoading(false);
+        return;
+      }
+
+      setData({
+        ...responseData.data,
+      });
+
+      addToOverallEngagementGraphData([
+        ...responseData.data.stats.totalRedirects.map((e) => {
+          return {
+            ...e,
+            timestamp: new Date(e.timestamp),
+          };
+        }),
+        ...responseData.data.stats.uniqueRedirects.map((e) => {
+          return {
+            ...e,
+            timestamp: new Date(e.timestamp),
+          };
+        }),
+      ]);
+
+      setLastFetchTime(Date.now());
+
+      hasFetched.current = true;
+      setLoading(false);
+    })(); // end of immediate function
+  }, []); // end of useEffect
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        if (!data) return;
+
+        const responseData = await fetchLinkData(
+          props.id,
+          props.identifierHash
+        );
+
+        if (responseData.error) return;
+
+        const responseStats = {
+          ...responseData.data.stats,
+          totalRedirects: responseData.data.stats.totalRedirects.map(
+            (entity) => {
+              return {
+                ...entity,
+                timestamp: new Date(entity.timestamp),
+              };
+            }
+          ),
+          uniqueRedirects: responseData.data.stats.uniqueRedirects.map(
+            (entity) => {
+              return {
+                ...entity,
+                timestamp: new Date(entity.timestamp),
+              };
+            }
+          ),
+        };
+
+        const stats = [
+          ...responseStats.totalRedirects,
+          ...responseStats.uniqueRedirects,
+        ].filter((entity) => {
+          return entity.timestamp.getTime() >= lastFetchTime;
+        });
 
         setData({
-          ...response.data,
+          ...data,
+          stats: { ...responseData.data.stats },
         });
 
-        setOverallEngagementGraphData((data) => {
-          return [
-            ...data,
-            ...response.data.stats.totalRedirects.map((e) => {
-              return {
-                ...e,
-                timestamp: new Date(e.timestamp),
-              };
-            }),
-            ...response.data.stats.uniqueRedirects.map((e) => {
-              return {
-                ...e,
-                timestamp: new Date(e.timestamp),
-              };
-            }),
-          ];
-        });
+        addToOverallEngagementGraphData(stats);
 
-        hasFetched.current = true;
-        setLoading(false);
-      });
-  }, []);
+        setLastFetchTime(Date.now());
+      } catch {}
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  });
 
   return loading || !data ? (
     <SkeletonItem />

@@ -3,7 +3,8 @@ import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
-import dynamic from "next/dynamic";
+import { ClientOnly } from "@/components/ClientOnly";
+import RecoilNexus from "recoil-nexus";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -28,8 +29,10 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        {children}
-        <Toaster position="bottom-left" richColors />
+        <ClientOnly>
+          {children}
+          <Toaster position="bottom-left" richColors />
+        </ClientOnly>
       </body>
     </html>
   );
