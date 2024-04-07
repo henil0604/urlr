@@ -107,7 +107,7 @@ export function CreateForm(): React.ReactNode {
               <Input
                 type="text"
                 id="urlId"
-                placeholder="Tailor your link ID"
+                placeholder="Tailor your link ID (eg. my-link)"
                 value={urlId}
                 ref={urlIdRef}
                 className="w-[400px] max-lg:w-full"
