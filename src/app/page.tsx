@@ -60,13 +60,24 @@ export default function Home() {
           <div className="my-2"></div>
           <div className="grid auto-cols-1 gap-4">
             <>
-              {Object.keys(links).map((id) => {
-                return (
-                  <Suspense key={links[id]} fallback={<div>Loading...</div>}>
-                    <LinkItem id={id} identifierHash={links[id]} />
-                  </Suspense>
-                );
-              })}
+              {Object.keys(links).length === 0 && (
+                <div className="w-full flex justify-center items-center p-4 flex-col gap-y-1.5">
+                  <div className="text-muted-foreground text-sm">
+                    You do not own any links yet!
+                  </div>
+                  <div className="text-muted-foreground text-sm">
+                    Start by creating one right now!
+                  </div>
+                </div>
+              )}
+              {Object.keys(links).length > 0 &&
+                Object.keys(links).map((id) => {
+                  return (
+                    <Suspense key={links[id]} fallback={<div>Loading...</div>}>
+                      <LinkItem id={id} identifierHash={links[id]} />
+                    </Suspense>
+                  );
+                })}
             </>
           </div>
         </div>
