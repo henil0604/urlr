@@ -14,6 +14,7 @@ import { LoadingSpinner } from "./LoadingSpinner";
 
 export function CreateForm(): React.ReactNode {
   const inputRef = useRef<HTMLInputElement>(null);
+  const urlIdRef = useRef<HTMLInputElement>(null);
   const { add: addLinkToLocalStorage } = useLinksStore();
   const [urlId, setUrlId] = useState("");
   const [loading, setLoading] = useState(false);
@@ -65,6 +66,11 @@ export function CreateForm(): React.ReactNode {
     toast.success("Link created successfully", {
       dismissible: true,
     });
+
+    inputRef.current!.value = "";
+    urlIdRef.current!.value = "";
+    setUrlId("");
+
     setLoading(false);
   }
 
@@ -103,6 +109,7 @@ export function CreateForm(): React.ReactNode {
                 id="urlId"
                 placeholder="Tailor your link ID"
                 value={urlId}
+                ref={urlIdRef}
                 className="w-[400px] max-lg:w-full"
                 onInput={(event) => {
                   setUrlId((event.target as HTMLInputElement).value);
