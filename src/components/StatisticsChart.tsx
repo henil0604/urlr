@@ -59,9 +59,13 @@ function transformDataByDayWise(
 				(e) => e.name === entity.name
 			);
 		}
+
 		let timestamp = moment(entity.timestamp);
-		let pointIndex = moment().date() - timestamp.date();
-		dataPointEntity!.data[minimumDataArrayLength - 1 - pointIndex]++;
+		let pointIndex = moment().diff(timestamp, 'days', false);
+		if (pointIndex < 0 || minimumDataArrayLength - pointIndex - 1 < 0) {
+			continue;
+		}
+		dataPointEntity!.data[minimumDataArrayLength - pointIndex - 1]++;
 	}
 
 	return transformedData;
@@ -73,7 +77,7 @@ export function StatisticsChart(
 		height: '100%',
 	}
 ) {
-	const DAYS = 7;
+	const DAYS = 10;
 
 	const xAxis = generateXAxis(DAYS);
 
