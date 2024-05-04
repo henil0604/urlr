@@ -1,1 +1,1 @@
-export const LocalStorageKeyName = "URLR_STORE";
+export const LocalStorageKeyName = 'URLR_STORE';
