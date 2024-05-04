@@ -37,62 +37,41 @@ type TransformedData = {
 
 function transformDataByDayWise(
 	data: Props['data'],
-	minimumDataArrayLength: number,
+	minimumDataArrayLength: number = 7
 ): TransformedData {
 	'use client';
 
-	data = data.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+	const transformedData: TransformedData = [];
 
-	const transformedData: {
-		[key: string]: /* name */ {
-			[key: number]: /* date */ number /* count */;
-		};
-	} = {};
+	for (let i = 0; i < data.length; i++) {
+		let entity = data[i];
 
-	for (const entity of data) {
-		const momentTime = moment(entity.timestamp);
+		let dataPointEntity = transformedData.find(
+			(e) => e.name === entity.name
+		);
 
-		if (!transformedData[entity.name]) {
-			transformedData[entity.name] = [];
+		if (!dataPointEntity) {
+			transformedData.push({
+				name: entity.name,
+				data: new Array(minimumDataArrayLength).fill(0),
+			});
+			dataPointEntity = transformedData.find(
+				(e) => e.name === entity.name
+			);
 		}
-
-		if (!transformedData[entity.name][momentTime.date()]) {
-			transformedData[entity.name][momentTime.date()] = 0;
-		}
-
-		transformedData[entity.name][momentTime.date()] += 1;
+		let timestamp = moment(entity.timestamp);
+		let pointIndex = moment().date() - timestamp.date();
+		dataPointEntity!.data[minimumDataArrayLength - 1 - pointIndex]++;
 	}
 
-	const filteredTransformData: TransformedData = [];
-
-	for (const name in transformedData) {
-		const data: number[] = [];
-		for (const date in transformedData[name]) {
-			data.push(transformedData[name][date]);
-		}
-		filteredTransformData.push({ name, data });
-	}
-
-	for (const entity of filteredTransformData) {
-		if (entity.data.length < minimumDataArrayLength === false) {
-			continue;
-		}
-
-		const diff = minimumDataArrayLength - entity.data.length;
-
-		for (let i = 0; i < diff; i++) {
-			entity.data.unshift(0);
-		}
-	}
-
-	return filteredTransformData;
+	return transformedData;
 }
 
 export function StatisticsChart(
 	props: Props = {
 		data: [],
 		height: '100%',
-	},
+	}
 ) {
 	const DAYS = 7;
 
